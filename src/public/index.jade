@@ -113,8 +113,8 @@ html(ng-app='AccountsApplication')
                             td {{account.attributes.firstName}}
                             td {{account.attributes.lastName}}
                             td {{account.attributes.mail}}
-                            td {{account.attributes.birthDate | date:'yyyy-MM-dd'}}
-                            td
+                            td.no-wrap {{account.attributes.birthDate | date:'yyyy-MM-dd'}}
+                            td.no-wrap
                                 button.btn.btn-sm.btn-default(ng-click="editAccount(account)")
                                     i.glyphicon.glyphicon-pencil
 
