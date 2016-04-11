@@ -41,25 +41,26 @@ html(ng-app='AccountsApplication')
                     form.form-inline(name='accountForm', ng-submit="save()")
                         .row
                             .col-md-2
-                                label.pull-right First name
+                                label.no-wrap First name
                             .col-md-3(ng-class="{'has-error': form.showError && accountForm.firstName.$error.required}")
                                 input.form-control(required, name="firstName", type="text", ng-model="form.account.firstName")
                                 .form-error.animated(ng-show="form.showError && accountForm.firstName.$error.required") First name is required
 
-                            .col-md-2
-                                label.pull-right Last name
+                            .col-md-2.col-md-offset-2
+                                label.no-wrap Last name
                             .col-md-3(ng-class="{'has-error': form.showError && accountForm.lastName.$error.required}")
                                 input.form-control(required, name="lastName", type="text", ng-model="form.account.lastName")
                                 .form-error.animated(ng-show="form.showError && accountForm.lastName.$error.required") Last name is required
                         .row(style='margin-top:15px;')
                             .col-md-2
-                                label.pull-right Mail
+                                label.no-wrap Mail
                             .col-md-3(ng-class="{'has-error': form.showError && (accountForm.mail.$error.required || accountForm.mail.$error.email)}")
                                 input.form-control(required, name="mail", type="email", ng-model="form.account.mail")
                                 .form-error.animated(ng-show="form.showError && accountForm.mail.$error.required") Email is required
                                 .form-error.animated(ng-show="form.showError && accountForm.mail.$error.email") Wrong email format
-                            .col-md-2
-                                label.pull-right Birth date
+
+                            .col-md-2.col-md-offset-2
+                                label.no-wrap Birth date
                             .col-md-3(ng-class="{'has-error': form.showError && accountForm.birthDate.$error.required}")
                                 .dropdown
                                     label {{form.account.birthDate | date:'yyyy-MM-dd'}}
@@ -79,7 +80,7 @@ html(ng-app='AccountsApplication')
     body(ng-controller='MainController')
         // header
         .row
-            .col-md-6.col-md-offset-3
+            .content.col-md-6.col-md-offset-3
                 nav.navbar.navbar-default
                     .container-fluid
                         .navbar-header.pull-right
@@ -93,13 +94,13 @@ html(ng-app='AccountsApplication')
 
         // error messages
         .row(ng-if="application.loadingErrorMessage")
-            .col-md-6.col-md-offset-3
+            .content.col-md-6.col-md-offset-3
                 .alert.alert-danger(ng-show="application.loadingErrorMessage") {{application.loadingErrorMessage}}
 
 
         // data table
         .row.animated(ng-show='application.loaded && !application.selectedAccount')
-            .col-md-6.col-md-offset-3(style='background-color:white;')
+            .content.col-md-6.col-md-offset-3(style='background-color:white;')
                 table.row-border.hover(datatable="ng")
                     thead
                         tr
