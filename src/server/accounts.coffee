@@ -2,12 +2,13 @@ config = require './config'
 backbone = require 'backbone'
 backboneSql = require 'backbone-sql'
 backboneRest = require 'backbone-rest'
-console.log config.mysqlUrl
+
+console.log "Mysql connection string: #{config.mysqlUrl}/#{config.MYSQL.ACCOUNTS_TABLE_NAME}"
 ###
   Accounts model
 ###
 class AccountsModel extends backbone.Model
-  urlRoot: "#{config.mysqlUrl}/accounts"
+  urlRoot: "#{config.mysqlUrl}/#{config.MYSQL.ACCOUNTS_TABLE_NAME}"
   schema:
     firstName: 'String'
     lastName: 'String'
@@ -21,14 +22,18 @@ class AccountsModel extends backbone.Model
 class Accounts
   accounts: null
   controller: null
-  resetTable: ->
+  
+  checkTable: ->
     db = AccountsModel.db()
     db.ensureSchema (err) =>
-      console.log err if err
-      db.resetSchema (err) ->console.log err if err
+      if err
+        console.log err
+      else
+        db.hasTable(config.MYSQL.ACCOUNTS_TABLE_NAME).exec (hasTable)->
+          db.resetSchema((err)->console.log err if err) unless hasTable
 
   init: ->
-    #@resetTable()
+    @checkTable()
     @controller = new backboneRest @app,
       model_type: AccountsModel
       route: '/accounts'

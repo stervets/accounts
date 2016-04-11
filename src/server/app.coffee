@@ -28,7 +28,6 @@ class App
 
   init: ->
     @app = @express()
-    console.log "#{__dirname}/../public/"
     @app.use @express.static "#{__dirname}/../public/"
     @app.use @bodyParser.json {}
     @server = @http.Server @app

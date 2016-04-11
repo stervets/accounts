@@ -18,7 +18,10 @@ class AccountsCollection extends Backbone.Collection
   Accounts factory
 ###
 module.factory FACTORY.ACCOUNTS,
+  inject: '$rootScope'
+
   application:
+    loaded: false
     selectedAccount: null
     loadingErrorMessage: null
 
@@ -61,6 +64,8 @@ module.factory FACTORY.ACCOUNTS,
       @application.loadingErrorMessage = err.toString()
     else
       @model.accounts.reset accounts
+      @application.loaded = true
+    @$rootScope.$apply()
 
   init: ->
     @model.accounts = new AccountsCollection()

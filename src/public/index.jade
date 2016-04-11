@@ -21,6 +21,7 @@ html(ng-app='AccountsApplication')
         script(src='/lib/datatables/media/js/jquery.dataTables.min.js')
         script(src='/lib/datatables/media/js/dataTables.bootstrap.min.js')
         script(src='/lib/angular/angular.min.js')
+        script(src='/lib/angular-animate/angular-animate.min.js')
         script(src='/lib/angular-datatables/dist/angular-datatables.min.js')
         script(src="/lib/angular-bootstrap-datetimepicker/src/js/datetimepicker.js")
         script(src="/lib/angular-bootstrap-datetimepicker/src/js/datetimepicker.templates.js")
@@ -37,36 +38,41 @@ html(ng-app='AccountsApplication')
                 .panel-heading Add account
 
                 .panel-body
-                    form.form-inline(name='accountForm', ng-submit="saveAccount()")
+                    form.form-inline(name='accountForm', ng-submit="save()")
                         .row
                             .col-md-2
                                 label.pull-right First name
-                            .col-md-3(ng-class="{'has-error': accountForm.firstName.$error.required}")
-                                input.form-control(required, name="firstName", type="text", ng-model="application.selectedAccount.attributes.firstName")
+                            .col-md-3(ng-class="{'has-error': form.showError && accountForm.firstName.$error.required}")
+                                input.form-control(required, name="firstName", type="text", ng-model="form.account.firstName")
+                                .form-error.animated(ng-show="form.showError && accountForm.firstName.$error.required") First name is required
+
                             .col-md-2
                                 label.pull-right Last name
-                            .col-md-3(ng-class="{'has-error': accountForm.lastName.$error.required}")
-                                input.form-control(required, name="lastName", type="text", ng-model="application.selectedAccount.attributes.lastName")
-
+                            .col-md-3(ng-class="{'has-error': form.showError && accountForm.lastName.$error.required}")
+                                input.form-control(required, name="lastName", type="text", ng-model="form.account.lastName")
+                                .form-error.animated(ng-show="form.showError && accountForm.lastName.$error.required") Last name is required
                         .row(style='margin-top:15px;')
                             .col-md-2
                                 label.pull-right Mail
-                            .col-md-3(ng-class="{'has-error': accountForm.mail.$error.required || accountForm.mail.$error.email}")
-                                input.form-control(required, name="mail", type="email", ng-model="application.selectedAccount.attributes.mail")
+                            .col-md-3(ng-class="{'has-error': form.showError && (accountForm.mail.$error.required || accountForm.mail.$error.email)}")
+                                input.form-control(required, name="mail", type="email", ng-model="form.account.mail")
+                                .form-error.animated(ng-show="form.showError && accountForm.mail.$error.required") Email is required
+                                .form-error.animated(ng-show="form.showError && accountForm.mail.$error.email") Wrong email format
                             .col-md-2
                                 label.pull-right Birth date
-                            .col-md-3(ng-class="{'has-error': accountForm.birthDate.$error.required}")
+                            .col-md-3(ng-class="{'has-error': form.showError && accountForm.birthDate.$error.required}")
                                 .dropdown
-                                        label {{application.selectedAccount.attributes.birthDate | date:'yyyy-MM-dd'}}
-                                        button.btn.btn-md.btn-default.pull-right(data-toggle="dropdown")
-                                            i.glyphicon.glyphicon-calendar
-                                        ul.dropdown-menu
-                                            datetimepicker(
-                                            ng-model="application.selectedAccount.attributes.birthDate",
-                                            data-datetimepicker-config="{ dropdownSelector: '.dropdown-toggle', startView: 'year', minView: 'day' }"
-                                            )
+                                    label {{form.account.birthDate | date:'yyyy-MM-dd'}}
+                                    button.btn.btn-md.btn-default.pull-right(data-toggle="dropdown")
+                                        i.glyphicon.glyphicon-calendar
+                                    ul.dropdown-menu
+                                        datetimepicker(
+                                        ng-model="form.account.birthDate",
+                                        data-datetimepicker-config="{ dropdownSelector: '.dropdown-toggle', startView: 'year', minView: 'day' }"
+                                        )
+                                .form-error.animated(ng-show="form.showError && accountForm.birthDate.$error.required") Birth date is required
                         .row
-                            .col-md-3.col-md-offset-4
+                            .col-md-4.col-md-offset-4
                                 button.btn.btn-sm.navbar-btn.btn-primary(type="submit", ng-disabled="accountForm.$invalid") {{application.selectedAccount.isNew() ? 'Create account' : 'Save'}}
                                 button.btn.btn-sm.navbar-btn.btn-default(type="button", ng-click="close()") Close
 
@@ -79,24 +85,20 @@ html(ng-app='AccountsApplication')
                         .navbar-header.pull-right
                             a.navbar-brand Accounts application
                         .navbar-collapse
-                            button.btn.btn-primary.navbar-btn(type="button", ng-click='addAccount()')
+                            button.btn.btn-primary.navbar-btn(type="button", ng-click='addAccount()', ng-disabled='!application.loaded')
                                 i.glyphicon.glyphicon-plus
                                 | &nbsp;&nbsp;Add account
 
                 edit-account(ng-show="application.selectedAccount")
 
         // error messages
-        .row(ng-if="application.loadingErrorMessage || (application.selectedAccount && accountForm.$invalid)")
+        .row(ng-if="application.loadingErrorMessage")
             .col-md-6.col-md-offset-3
                 .alert.alert-danger(ng-show="application.loadingErrorMessage") {{application.loadingErrorMessage}}
-                .alert.alert-danger(ng-show="accountForm.firstName.$error.required") First name is required
-                .alert.alert-danger(ng-show="accountForm.lastName.$error.required") Last name is required
-                .alert.alert-danger(ng-show="accountForm.mail.$error.required") Email is required
-                .alert.alert-danger(ng-show="accountForm.mail.$error.email") Wrong email format
-                .alert.alert-danger(ng-show="accountForm.birthDate.$error.required") Birth date is required
+
 
         // data table
-        .row
+        .row.animated(ng-show='application.loaded && !application.selectedAccount')
             .col-md-6.col-md-offset-3(style='background-color:white;')
                 table.row-border.hover(datatable="ng")
                     thead
@@ -116,5 +118,5 @@ html(ng-app='AccountsApplication')
                                 button.btn.btn-sm.btn-default(ng-click="editAccount(account)")
                                     i.glyphicon.glyphicon-pencil
 
-                                button.btn.btn-sm.btn-default(ng-click="removeAccount(account)")
+                                button.btn.btn-sm.btn-default(ng-click="remove(account)")
                                     i.glyphicon.glyphicon-remove
