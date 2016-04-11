@@ -2,12 +2,12 @@
 Test task for Senior JavaScript Web Developer position.
 
 ### Install
-Clone application repository from github
+##### 1. Clone application repository from github
 ```
     git clone https://github.com/stervets/accounts.git
     cd accounts
 ```
-Edit src/server/config.coffee file and set mysql database access requisites
+##### 2. Edit src/server/config.coffee file and set mysql database access requisites
 ```
     ADDR: 'localhost:3306',
     DBNAME: 'test',
@@ -15,11 +15,11 @@ Edit src/server/config.coffee file and set mysql database access requisites
     PASSWORD: '123123',
     ACCOUNTS_TABLE_NAME: 'accounts'
 ```
-build project
+##### 3. Build project
 ```
     gulp build
 ```
-run
+##### 4. Run
 ```
     npm start
 ```
