@@ -1,0 +1,120 @@
+doctype html
+html(ng-app='AccountsApplication')
+    head
+        title Accounts
+        meta(http-equiv="Content-Type",content="text/html; charset=UTF-8")
+
+        link(type='text/css', href='/lib/bootstrap/dist/css/bootstrap.min.css', rel='stylesheet')
+        link(type='text/css', href='/lib/bootstrap/dist/css/bootstrap-theme.min.css', rel='stylesheet')
+        link(type='text/css', href='/lib/datatables/media/css/jquery.dataTables.min.css', rel='stylesheet')
+        link(type='text/css', href='/lib/angular-datatables/dist/css/angular-datatables.min.css', rel='stylesheet')
+        link(type='text/css', href='/lib/angular-bootstrap-datetimepicker/src/css/datetimepicker.css', rel='stylesheet')
+        link(type='text/css', href='/app.css', rel='stylesheet')
+
+        script(src='/lib/jquery/dist/jquery.min.js')
+        script(src='/lib/moment/min/moment.min.js')
+        script(src='/lib/underscore/underscore-min.js')
+        script(src='/lib/backbone/backbone-min.js')
+        script(src='/lib/backbone-orm/backbone-orm.min.js')
+        script(src='/lib/backbone-http/backbone-http.min.js')
+        script(src='/lib/bootstrap/dist/js/bootstrap.min.js')
+        script(src='/lib/datatables/media/js/jquery.dataTables.min.js')
+        script(src='/lib/datatables/media/js/dataTables.bootstrap.min.js')
+        script(src='/lib/angular/angular.min.js')
+        script(src='/lib/angular-datatables/dist/angular-datatables.min.js')
+        script(src="/lib/angular-bootstrap-datetimepicker/src/js/datetimepicker.js")
+        script(src="/lib/angular-bootstrap-datetimepicker/src/js/datetimepicker.templates.js")
+        script(src='/lib/triangle/triangle.min.js')
+
+        script(src='/app/config.js')
+        script(src='/app/accounts-provider.js')
+        script(src='/app/edit-account-directive.js')
+        script(src='/app/app.js')
+
+        // <edit-account> directive template
+        script#jsEditAccountTemplate(type='text/ng-template')
+            .panel.panel-default
+                .panel-heading Add account
+
+                .panel-body
+                    form.form-inline(name='accountForm', ng-submit="saveAccount()")
+                        .row
+                            .col-md-2
+                                label.pull-right First name
+                            .col-md-3(ng-class="{'has-error': accountForm.firstName.$error.required}")
+                                input.form-control(required, name="firstName", type="text", ng-model="application.selectedAccount.attributes.firstName")
+                            .col-md-2
+                                label.pull-right Last name
+                            .col-md-3(ng-class="{'has-error': accountForm.lastName.$error.required}")
+                                input.form-control(required, name="lastName", type="text", ng-model="application.selectedAccount.attributes.lastName")
+
+                        .row(style='margin-top:15px;')
+                            .col-md-2
+                                label.pull-right Mail
+                            .col-md-3(ng-class="{'has-error': accountForm.mail.$error.required || accountForm.mail.$error.email}")
+                                input.form-control(required, name="mail", type="email", ng-model="application.selectedAccount.attributes.mail")
+                            .col-md-2
+                                label.pull-right Birth date
+                            .col-md-3(ng-class="{'has-error': accountForm.birthDate.$error.required}")
+                                .dropdown
+                                        label {{application.selectedAccount.attributes.birthDate | date:'yyyy-MM-dd'}}
+                                        button.btn.btn-md.btn-default.pull-right(data-toggle="dropdown")
+                                            i.glyphicon.glyphicon-calendar
+                                        ul.dropdown-menu
+                                            datetimepicker(
+                                            ng-model="application.selectedAccount.attributes.birthDate",
+                                            data-datetimepicker-config="{ dropdownSelector: '.dropdown-toggle', startView: 'year', minView: 'day' }"
+                                            )
+                        .row
+                            .col-md-3.col-md-offset-4
+                                button.btn.btn-sm.navbar-btn.btn-primary(type="submit", ng-disabled="accountForm.$invalid") {{application.selectedAccount.isNew() ? 'Create account' : 'Save'}}
+                                button.btn.btn-sm.navbar-btn.btn-default(type="button", ng-click="close()") Close
+
+    body(ng-controller='MainController')
+        // header
+        .row
+            .col-md-6.col-md-offset-3
+                nav.navbar.navbar-default
+                    .container-fluid
+                        .navbar-header.pull-right
+                            a.navbar-brand Accounts application
+                        .navbar-collapse
+                            button.btn.btn-primary.navbar-btn(type="button", ng-click='addAccount()')
+                                i.glyphicon.glyphicon-plus
+                                | &nbsp;&nbsp;Add account
+
+                edit-account(ng-show="application.selectedAccount")
+
+        // error messages
+        .row(ng-if="application.loadingErrorMessage || (application.selectedAccount && accountForm.$invalid)")
+            .col-md-6.col-md-offset-3
+                .alert.alert-danger(ng-show="application.loadingErrorMessage") {{application.loadingErrorMessage}}
+                .alert.alert-danger(ng-show="accountForm.firstName.$error.required") First name is required
+                .alert.alert-danger(ng-show="accountForm.lastName.$error.required") Last name is required
+                .alert.alert-danger(ng-show="accountForm.mail.$error.required") Email is required
+                .alert.alert-danger(ng-show="accountForm.mail.$error.email") Wrong email format
+                .alert.alert-danger(ng-show="accountForm.birthDate.$error.required") Birth date is required
+
+        // data table
+        .row
+            .col-md-6.col-md-offset-3(style='background-color:white;')
+                table.row-border.hover(datatable="ng")
+                    thead
+                        tr
+                            th First name
+                            th Last name
+                            th Email
+                            th Birth date
+                            th
+                    tbody
+                        tr(ng-repeat="account in model.accounts.models")
+                            td {{account.attributes.firstName}}
+                            td {{account.attributes.lastName}}
+                            td {{account.attributes.mail}}
+                            td {{account.attributes.birthDate | date:'yyyy-MM-dd'}}
+                            td
+                                button.btn.btn-sm.btn-default(ng-click="editAccount(account)")
+                                    i.glyphicon.glyphicon-pencil
+
+                                button.btn.btn-sm.btn-default(ng-click="removeAccount(account)")
+                                    i.glyphicon.glyphicon-remove
