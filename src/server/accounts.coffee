@@ -29,7 +29,7 @@ class Accounts
       if err
         console.log err
       else
-        db.hasTable(config.MYSQL.ACCOUNTS_TABLE_NAME).exec (hasTable)->
+        db.hasTable(config.MYSQL.ACCOUNTS_TABLE_NAME).exec (err, hasTable)->
           db.resetSchema((err)->console.log err if err) unless hasTable
 
   init: ->
